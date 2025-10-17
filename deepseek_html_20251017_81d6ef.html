@@ -189,7 +189,13 @@
         }
         .left  {
             background-color: #000000; /* 纯黑背景 */
-            background-image: none; /* 移除原图案，改为显示文字 */
+            /* 角度分区：-45°~45°白，45°~135°黑，135°~225°白，225°~315°黑 */
+            background-image: conic-gradient(from -45deg,
+                #ffffff 0 90deg,
+                #000000 90deg 180deg,
+                #ffffff 180deg 270deg,
+                #000000 270deg 360deg
+            );
             background-size: auto;
             background-position: center;
             background-repeat: no-repeat;
