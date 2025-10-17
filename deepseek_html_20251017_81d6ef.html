@@ -58,16 +58,16 @@
         .controls { text-align: center; margin-top: 10px; }
         .controls .btn {
             appearance: none;
-            border: 1px solid #d0d7de;
-            background: #ffffff;
-            color: #24292f;
+            border: 1px solid #30363d;
+            background: #24292f;
+            color: #ffffff;
             padding: 8px 14px;
             border-radius: 6px;
             cursor: pointer;
             transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
             box-shadow: 0 1px 2px rgba(0,0,0,0.04);
         }
-        .controls .btn:hover { background: #f6f8fa; }
+        .controls .btn:hover { background: #2d333b; }
         .controls .btn:active { transform: translateY(1px); }
 
         /* 右侧可复制文字板式（与4号面一致） */
@@ -81,7 +81,7 @@
             margin-left: 24px;
             align-self: center;
         }
-        .copy-title { color: #7f8c8d; font-size: 13px; margin-bottom: 10px; text-align: center; }
+        .copy-title { color: #fafafa; font-size: 13px; margin-bottom: 10px; text-align: center; }
         .copy-text {
             display: flex;
             flex-direction: column;
@@ -182,61 +182,53 @@
         .back::before  { clip-path: inset(0 0 0 50%); }
         .right {
             background-color: #ffffff;
+            background-image: url('3683738f4be50e6c6cee6e1cc30d0fdc.png');
+            background-size: contain; /* 显示完整杯子 */
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .right::before{
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 14px; /* 含阴影高度 */
+            pointer-events: none;
+            /* 1px 分割线 + 向下渐隐阴影 */
+            background:
+                linear-gradient(to bottom,
+                    rgba(0,0,0,0.28) 0,
+                    rgba(0,0,0,0.28) 1px,
+                    rgba(0,0,0,0.14) 1px,
+                    rgba(0,0,0,0.00) 100%
+                );
+        }
+        .left  {
+            background-color: #ffffff;
             background-image: url('6.png');
             background-size: 150% auto;
             background-position: center;
             background-repeat: no-repeat;
         }
-        .left  {
-            background-color: #000000; /* 纯黑背景 */
-            /* 角度分区：-45°~45°白，45°~135°黑，135°~225°白，225°~315°黑 */
-            background-image: conic-gradient(from -45deg,
-                #ffffff 0 90deg,
-                #000000 90deg 180deg,
-                #ffffff 180deg 270deg,
-                #000000 270deg 360deg
-            );
-            background-size: auto;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-        /* 艺术化排版文字：左右与顶面 */
-        /* 仅右侧一面展示完整语句 */
         .left::before {
-            content: "PAUSE  AND  BREATHE\A THE WORLD  CAN WAIT\A STILLNESS IS\A A FORM OF STRENGTH";
+            content: "Balance. Simplicity. Mindfulness.";
             position: absolute;
-            inset: 18px; /* 稍收紧边距，整体更集中 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            top: 12%;
+            left: 8%;
+            right: 8%;
             text-align: center;
-            white-space: pre-wrap; /* 保留空格与换行 */
-            overflow-wrap: anywhere;
-            word-break: break-word;
-            padding: 0 8px; /* 横向留白，避免紧贴 */
-            font-weight: 800;
-            letter-spacing: 0.6px; /* 收紧字距，提升精致感 */
-            word-spacing: 1px;
-            line-height: 1.32;
-            font-size: 15px; /* 略增字号 */
-            color: #fafafa; /* 更亮一点的白色 */
-            /* 雕刻/内凹（黑底版）：更克制的高光与阴影 */
-            text-shadow:
-                    0 -1px 0 rgba(255,255,255,0.20),
-                    0 1px 0 rgba(0,0,0,0.60),
-                    0 1px 3px rgba(0,0,0,0.40);
-            -webkit-text-stroke: 0.3px rgba(255,255,255,0.12);
-            text-rendering: optimizeLegibility;
-            -webkit-font-smoothing: antialiased;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            line-height: 1.4;
+            font-size: 15px;
+            color: #222222; /* 白底上的深色文字 */
+            text-shadow: 0 1px 2px rgba(255,255,255,0.6), 0 1px 3px rgba(0,0,0,0.15);
             pointer-events: none;
         }
         .left::after{
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.06), rgba(0,0,0,0) 65%);
-            mix-blend-mode: screen; /* 轻微提亮中央区域 */
+            content: none;
+            background: none;
         }
         .top   {
             background-color: #000000;
@@ -405,35 +397,11 @@
                         <div class="face back"></div>
                         <div class="face right"></div>
                         <div class="face left">
-                            <!-- 4号面：太极灵感文字排版（SVG曲线排版） -->
-                            <svg class="taiji-typography" viewBox="0 0 240 240" aria-hidden="true">
-                                <defs>
-                                    <path id="arc-top" d="M 40 120 A 80 80 0 0 1 200 120" />
-                                    <path id="arc-bottom" d="M 200 120 A 80 80 0 0 1 40 120" />
-                                    <path id="arc-inner-top" d="M 70 120 A 50 50 0 0 1 170 120" />
-                                    <path id="arc-inner-bottom" d="M 170 120 A 50 50 0 0 1 70 120" />
-                                </defs>
-                                <g class="soft-glow">
-                                    <text text-anchor="middle">
-                                        <textPath href="#arc-top" startOffset="50%">PAUSE  AND  BREATHE</textPath>
-                                    </text>
-                                    <text text-anchor="middle">
-                                        <textPath href="#arc-inner-top" startOffset="50%">THE WORLD  CAN WAIT</textPath>
-                                    </text>
-                                    <text text-anchor="middle">
-                                        <textPath href="#arc-inner-bottom" startOffset="50%">STILLNESS IS</textPath>
-                                    </text>
-                                    <text text-anchor="middle">
-                                        <textPath href="#arc-bottom" startOffset="50%">A FORM OF STRENGTH</textPath>
-                                    </text>
-                                </g>
-                            </svg>
                         </div>
                         <div class="face top"></div>
                         <div class="face bottom"></div>
                     </div>
                 </div>
-                <p style="text-align: center; color: #7f8c8d; margin-top:12px;">按住拖拽旋转查看3D设计</p>
                 <div class="controls">
                     <button id="btnFront" type="button" class="btn" aria-label="回到正面">回到正面</button>
                 </div>
@@ -441,10 +409,7 @@
             <div class="copy-panel" aria-label="可复制文字板式">
                 <div class="copy-title">可复制的文字排版（与4号面一致）</div>
                 <div class="copy-text">
-                    <div class="line line1">PAUSE  AND  BREATHE</div>
-                    <div class="line line2">THE WORLD  CAN WAIT</div>
-                    <div class="line line3">STILLNESS IS</div>
-                    <div class="line line4">A FORM OF STRENGTH</div>
+                    <div class="line line1">Balance. Simplicity. Mindfulness.</div>
                 </div>
             </div>
         </div>
@@ -475,6 +440,7 @@
 
         if ('PointerEvent' in window) {
             cube.addEventListener('pointerdown', (e) => {
+                if (e.cancelable) e.preventDefault();
                 dragging = true;
                 startX = e.clientX;
                 startY = e.clientY;
@@ -491,7 +457,7 @@
             };
             cube.addEventListener('pointerup', endPointer);
             cube.addEventListener('pointercancel', endPointer);
-            cube.addEventListener('pointerleave', () => { dragging = false; });
+            cube.addEventListener('lostpointercapture', endPointer);
         } else {
             // 回退：鼠标 + 触摸
             cube.addEventListener('mousedown', (e) => {
@@ -503,10 +469,11 @@
             window.addEventListener('mouseup', () => { dragging = false; });
 
             cube.addEventListener('touchstart', (e) => {
+                if (e.cancelable) e.preventDefault();
                 dragging = true;
                 startX = e.touches[0].clientX;
                 startY = e.touches[0].clientY;
-            }, { passive: true });
+            }, { passive: false });
             window.addEventListener('touchmove', (e) => {
                 // 防止页面滚动影响拖拽
                 if (e.cancelable) e.preventDefault();
