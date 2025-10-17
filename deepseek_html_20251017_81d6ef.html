@@ -51,7 +51,7 @@
             padding: 0;
             box-shadow: none;
         }
-        
+
         .box-preview h2 { display: none; }
 
         /* 控件样式 */
@@ -69,6 +69,50 @@
         }
         .controls .btn:hover { background: #f6f8fa; }
         .controls .btn:active { transform: translateY(1px); }
+
+        /* 右侧可复制文字板式（与4号面一致） */
+        .copy-panel {
+            width: 260px;
+            min-width: 240px;
+            background: #000000;
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-left: 24px;
+            align-self: center;
+        }
+        .copy-title { color: #7f8c8d; font-size: 13px; margin-bottom: 10px; text-align: center; }
+        .copy-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-align: center;
+            user-select: text; -webkit-user-select: text; -ms-user-select: text;
+        }
+        .copy-text .line {
+            color: #fafafa;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            word-spacing: 1px;
+            text-shadow:
+                0 -1px 0 rgba(255,255,255,0.20),
+                0 1px 0 rgba(0,0,0,0.60),
+                0 1px 3px rgba(0,0,0,0.40);
+            -webkit-text-stroke: 0.3px rgba(255,255,255,0.12);
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+        }
+        .copy-text .line1 { font-size: 16px; }
+        .copy-text .line2 { font-size: 15px; }
+        .copy-text .line3 { font-size: 14px; letter-spacing: 0.5px; }
+        .copy-text .line4 { font-size: 14px; letter-spacing: 0.7px; }
+
+        @media (max-width: 900px) {
+            .content { flex-direction: column; align-items: center; }
+            .copy-panel { margin-left: 0; margin-top: 16px; }
+        }
 
         /* 3D 场景与立方体 */
         .scene {
@@ -90,7 +134,7 @@
             cursor: grab;
             touch-action: none; /* 防止触摸滚动/双指缩放干扰拖拽 */
         }
-        
+
         .box-3d:active { cursor: grabbing; }
         
         .face {
@@ -115,7 +159,7 @@
         .left  { transform: rotateY(-90deg) translateZ(120px); }
         .top   { transform: rotateX(90deg) translateZ(120px); }
         .bottom{ transform: rotateX(-90deg) translateZ(120px); }
-        
+
         /* 设计应用：前后杯子照片改为半幅呈现，主体仍为黑色 */
         .front { background: linear-gradient(to right, #000000 0 50%, #ffffff 50% 100%); background-position: center; background-repeat: no-repeat; }
         .back  { background: linear-gradient(to right, #ffffff 0 50%, #000000 50% 100%); }
@@ -126,8 +170,8 @@
             position: absolute;
             inset: 0;
             background-image:
-                linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)),
-                url('3683738f4be50e6c6cee6e1cc30d0fdc.png');
+                    linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)),
+                    url('3683738f4be50e6c6cee6e1cc30d0fdc.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -151,7 +195,7 @@
             background-repeat: no-repeat;
         }
         /* 艺术化排版文字：左右与顶面 */
-         /* 仅右侧一面展示完整语句 */
+        /* 仅右侧一面展示完整语句 */
         .left::before {
             content: "PAUSE  AND  BREATHE\A THE WORLD  CAN WAIT\A STILLNESS IS\A A FORM OF STRENGTH";
             position: absolute;
@@ -172,9 +216,9 @@
             color: #fafafa; /* 更亮一点的白色 */
             /* 雕刻/内凹（黑底版）：更克制的高光与阴影 */
             text-shadow:
-                0 -1px 0 rgba(255,255,255,0.20),
-                0 1px 0 rgba(0,0,0,0.60),
-                0 1px 3px rgba(0,0,0,0.40);
+                    0 -1px 0 rgba(255,255,255,0.20),
+                    0 1px 0 rgba(0,0,0,0.60),
+                    0 1px 3px rgba(0,0,0,0.40);
             -webkit-text-stroke: 0.3px rgba(255,255,255,0.12);
             text-rendering: optimizeLegibility;
             -webkit-font-smoothing: antialiased;
@@ -195,7 +239,7 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-        
+
         /* 每个面红色标注（置于最上层） */
         .face::after {
             position: absolute;
@@ -221,8 +265,8 @@
         .bottom{
             /* 抽象四宫格：叠加轻微中心晕影，弱化强对称感 */
             background-image:
-                radial-gradient(circle at 50% 50%, rgba(0,0,0,0.06), rgba(0,0,0,0) 70%),
-                conic-gradient(#ffffff 0 90deg, #000000 90deg 180deg, #ffffff 180deg 270deg, #000000 270deg 360deg);
+                    radial-gradient(circle at 50% 50%, rgba(0,0,0,0.06), rgba(0,0,0,0) 70%),
+                    conic-gradient(#ffffff 0 90deg, #000000 90deg 180deg, #ffffff 180deg 270deg, #000000 270deg 360deg);
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -238,23 +282,23 @@
             pointer-events: none;
             /* 抽象化中心图形：半透明弧段 + 轻微径向过渡 */
             background:
-                conic-gradient(from 35deg,
+                    conic-gradient(from 35deg,
                     rgba(255,255,255,0.14) 0 55deg,
                     transparent 55deg 120deg,
                     rgba(0,0,0,0.14) 120deg 185deg,
                     transparent 185deg 250deg,
                     rgba(255,255,255,0.14) 250deg 305deg,
                     transparent 305deg 360deg
-                ),
-                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.08), rgba(0,0,0,0.10) 60%, rgba(0,0,0,0) 78%);
+                    ),
+                    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.08), rgba(0,0,0,0.10) 60%, rgba(0,0,0,0) 78%);
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12), 0 1px 6px rgba(0,0,0,0.22);
             z-index: 1; /* 标签数字在 ::after 更上层 */
         }
-        
+
         .logo { font-size: 22px; font-weight: bold; text-align: center; letter-spacing: 1px; }
         .brand-name { font-size: 16px; margin-top: 8px; }
         .mug-info { font-size: 13px; text-align: center; padding: 8px; }
-        
+
         .design-details { display: none; }
         
         .design-details h2 {
@@ -388,86 +432,95 @@
                     <button id="btnFront" type="button" class="btn" aria-label="回到正面">回到正面</button>
                 </div>
             </div>
+            <div class="copy-panel" aria-label="可复制文字板式">
+                <div class="copy-title">可复制的文字排版（与4号面一致）</div>
+                <div class="copy-text">
+                    <div class="line line1">PAUSE  AND  BREATHE</div>
+                    <div class="line line2">THE WORLD  CAN WAIT</div>
+                    <div class="line line3">STILLNESS IS</div>
+                    <div class="line line4">A FORM OF STRENGTH</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // 3D 立方体拖拽旋转交互（Pointer Events 更稳健，避免停止后无响应）
+    // 3D 立方体拖拽旋转交互（Pointer Events 更稳健，避免停止后无响应）
         document.addEventListener('DOMContentLoaded', function() {
-            const cube = document.querySelector('.box-3d');
-            let dragging = false;
-            let startX = 0, startY = 0;
-            let rotX = -15, rotY = -25;
+        const cube = document.querySelector('.box-3d');
+        let dragging = false;
+        let startX = 0, startY = 0;
+        let rotX = -15, rotY = -25;
 
-            const apply = () => {
-                cube.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-            };
+        const apply = () => {
+            cube.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+        };
 
-            const onMoveDelta = (clientX, clientY) => {
-                if (!dragging) return;
-                const dx = clientX - startX;
-                const dy = clientY - startY;
-                rotY += dx * 0.3;
-                rotX -= dy * 0.3;
-                startX = clientX;
-                startY = clientY;
-                apply();
-            };
-
-            if ('PointerEvent' in window) {
-                cube.addEventListener('pointerdown', (e) => {
-                    dragging = true;
-                    startX = e.clientX;
-                    startY = e.clientY;
-                    try { cube.setPointerCapture(e.pointerId); } catch (_) {}
-                });
-                cube.addEventListener('pointermove', (e) => {
-                    // 屏蔽默认手势与滚动，提升拖拽可靠性
-                    if (e.cancelable) e.preventDefault();
-                    onMoveDelta(e.clientX, e.clientY);
-                }, { passive: false });
-                const endPointer = (e) => {
-                    dragging = false;
-                    try { cube.releasePointerCapture(e.pointerId); } catch (_) {}
-                };
-                cube.addEventListener('pointerup', endPointer);
-                cube.addEventListener('pointercancel', endPointer);
-                cube.addEventListener('pointerleave', () => { dragging = false; });
-            } else {
-                // 回退：鼠标 + 触摸
-                cube.addEventListener('mousedown', (e) => {
-                    dragging = true;
-                    startX = e.clientX;
-                    startY = e.clientY;
-                });
-                window.addEventListener('mousemove', (e) => onMoveDelta(e.clientX, e.clientY));
-                window.addEventListener('mouseup', () => { dragging = false; });
-
-                cube.addEventListener('touchstart', (e) => {
-                    dragging = true;
-                    startX = e.touches[0].clientX;
-                    startY = e.touches[0].clientY;
-                }, { passive: true });
-                window.addEventListener('touchmove', (e) => {
-                    // 防止页面滚动影响拖拽
-                    if (e.cancelable) e.preventDefault();
-                    onMoveDelta(e.touches[0].clientX, e.touches[0].clientY);
-                }, { passive: false });
-                window.addEventListener('touchend', () => { dragging = false; });
-                window.addEventListener('mouseleave', () => { dragging = false; });
-            }
-
-            // 回到正面按钮
-            const btnFront = document.getElementById('btnFront');
-            if (btnFront) {
-                btnFront.addEventListener('click', () => {
-                    rotX = -10; // 轻微俯视角度，视觉更自然
-                    rotY = 0;   // 正对正面
-                    apply();
-                });
-            }
-
+        const onMoveDelta = (clientX, clientY) => {
+            if (!dragging) return;
+            const dx = clientX - startX;
+            const dy = clientY - startY;
+            rotY += dx * 0.3;
+            rotX -= dy * 0.3;
+            startX = clientX;
+            startY = clientY;
             apply();
+        };
+
+        if ('PointerEvent' in window) {
+            cube.addEventListener('pointerdown', (e) => {
+                dragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                try { cube.setPointerCapture(e.pointerId); } catch (_) {}
+            });
+            cube.addEventListener('pointermove', (e) => {
+                // 屏蔽默认手势与滚动，提升拖拽可靠性
+                if (e.cancelable) e.preventDefault();
+                onMoveDelta(e.clientX, e.clientY);
+            }, { passive: false });
+            const endPointer = (e) => {
+                dragging = false;
+                try { cube.releasePointerCapture(e.pointerId); } catch (_) {}
+            };
+            cube.addEventListener('pointerup', endPointer);
+            cube.addEventListener('pointercancel', endPointer);
+            cube.addEventListener('pointerleave', () => { dragging = false; });
+        } else {
+            // 回退：鼠标 + 触摸
+            cube.addEventListener('mousedown', (e) => {
+                dragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+            });
+            window.addEventListener('mousemove', (e) => onMoveDelta(e.clientX, e.clientY));
+            window.addEventListener('mouseup', () => { dragging = false; });
+
+            cube.addEventListener('touchstart', (e) => {
+                dragging = true;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            }, { passive: true });
+            window.addEventListener('touchmove', (e) => {
+                // 防止页面滚动影响拖拽
+                if (e.cancelable) e.preventDefault();
+                onMoveDelta(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: false });
+            window.addEventListener('touchend', () => { dragging = false; });
+            window.addEventListener('mouseleave', () => { dragging = false; });
+        }
+
+        // 回到正面按钮
+        const btnFront = document.getElementById('btnFront');
+        if (btnFront) {
+            btnFront.addEventListener('click', () => {
+                rotX = -10; // 轻微俯视角度，视觉更自然
+                rotY = 0;   // 正对正面
+                apply();
+            });
+        }
+
+        apply();
         });
     </script>
 </body>
