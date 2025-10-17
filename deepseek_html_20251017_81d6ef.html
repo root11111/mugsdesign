@@ -160,11 +160,50 @@
         .top   { transform: rotateX(90deg) translateZ(120px); }
         .bottom{ transform: rotateX(-90deg) translateZ(120px); }
 
-        /* 设计应用：前后杯子照片改为半幅呈现，主体仍为黑色 */
-        .front { background: linear-gradient(to right, #000000 0 50%, #ffffff 50% 100%); background-position: center; background-repeat: no-repeat; }
+        /* 设计应用：1面左侧黑色+杯子图，右侧磨砂 */
+        .front { 
+            background: linear-gradient(to right, #000000 0 50%, #f5f5f5 50% 100%); 
+            background-position: center; 
+            background-repeat: no-repeat; 
+        }
+        /* 1面居中杯子图片，只显示右半部分 */
+        .front::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                    linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)),
+                    url('3683738f4be50e6c6cee6e1cc30d0fdc.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            clip-path: inset(0 0 0 50%); /* 只显示右半部分 */
+            pointer-events: none;
+            z-index: 0;
+        }
+        /* 1面右侧磨砂效果 */
+        .front::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.3) 1px, transparent 1px),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.2) 1px, transparent 1px),
+                radial-gradient(circle at 40% 80%, rgba(255,255,255,0.25) 1px, transparent 1px),
+                radial-gradient(circle at 60% 20%, rgba(255,255,255,0.15) 1px, transparent 1px),
+                linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            background-size: 8px 8px, 12px 12px, 6px 6px, 10px 10px, 100% 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
         .back  { background: linear-gradient(to right, #ffffff 0 50%, #000000 50% 100%); }
         /* 将半幅杯子图移到 ::before，便于 ::after 作为红色标注层 */
-        .front::before,
         .back::before {
             content: "";
             position: absolute;
@@ -177,11 +216,10 @@
             background-repeat: no-repeat;
             pointer-events: none;
         }
-        /* 只显示杯子的一半：front 显示左半，back 显示右半 */
-        .front::before { clip-path: inset(0 50% 0 0); }
-        .back::before  { clip-path: inset(0 0 0 50%); }
+        /* 只显示杯子的一半：back 显示左半 */
+        .back::before  { clip-path: inset(0 50% 0 0); }
         .right {
-            background-color: #ffffff; /* 3面改为原4面风格 */
+            background-color: #f5f5f5; /* 3面磨砂背景色 */
             background-image: none; /* 使用伪元素分上下两半 */
             background-size: auto;
             background-position: center;
@@ -263,7 +301,20 @@
             content: none;
             z-index: 2;
         }
-        .front::after { content: "1"; }
+        .face-number { 
+            position: absolute; 
+            top: 6px; 
+            left: 6px; 
+            padding: 2px 6px; 
+            font-size: 12px; 
+            font-weight: 700; 
+            letter-spacing: 0.5px; 
+            color: #ff3b30; 
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5); 
+            background: rgba(0,0,0,0.0); 
+            pointer-events: none; 
+            z-index: 3; 
+        }
         .back::after  { content: "2"; }
         .right::after { content: "3"; }
         .left::after  { content: "4"; }
@@ -409,9 +460,9 @@
         <div class="box-preview">
             <div class="scene">
                 <div class="box-3d" aria-label="可拖拽旋转的马克杯3D盒">
-                    <div class="face front"></div>
+                    <div class="face front"><span class="face-number">1</span></div>
                     <div class="face back"></div>
-                    <div class="face right"></div>
+                    <div class="face right"><span class="face-number">3</span></div>
                     <div class="face left">
                     </div>
                     <div class="face top"></div>
