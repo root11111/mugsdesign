@@ -182,26 +182,39 @@
         .back::before  { clip-path: inset(0 0 0 50%); }
         .right {
             background-color: #ffffff; /* 3面改为原4面风格 */
-            background-image: url('6.png');
-            background-size: 150% auto;
-            background-position: center 58%; /* 向下轻微偏移 */
+            background-image: none; /* 使用伪元素分上下两半 */
+            background-size: auto;
+            background-position: center;
             background-repeat: no-repeat;
         }
         .right::before{
-            content: "Balance. Simplicity. Mindfulness.";
+            content: "";
             position: absolute;
-            top: 12%;
-            left: 8%;
-            right: 8%;
-            text-align: center;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            line-height: 1.4;
-            font-size: 15px;
-            color: #222222; /* 白底上的深色文字 */
-            text-shadow: 0 1px 2px rgba(255,255,255,0.6), 0 1px 3px rgba(0,0,0,0.15);
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%; /* 上半部分 */
+            background-image: url('5.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
             pointer-events: none;
-            white-space: normal;
+            padding: 0;
+        }
+        .right::after{
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%; /* 下半部分 */
+            background-image: url('6.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            pointer-events: none;
+            padding: 0;
+            top: auto;
         }
         .left  {
             background-color: #000000; /* 4面改为原3面全黑 */
@@ -257,36 +270,43 @@
         .top::after   { content: "5"; }
         .bottom::after{ content: "6"; }
         .bottom{
-            /* 抽象四宫格：叠加轻微中心晕影，弱化强对称感 */
-            background-image:
-                    radial-gradient(circle at 50% 50%, rgba(0,0,0,0.06), rgba(0,0,0,0) 70%),
-                    conic-gradient(#ffffff 0 90deg, #000000 90deg 180deg, #ffffff 180deg 270deg, #000000 270deg 360deg);
+            background-image: url('6.png');
+            background-size: 80% auto;
             background-position: center;
             background-repeat: no-repeat;
         }
         .bottom::before{
+            content: none;
+            background: none;
+        }
+
+        /* 覆盖数字标签：让 3 号面上下各 50% 图片生效 */
+        .box-3d .face.right::before {
             content: "";
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 68%;
-            height: 68%;
-            transform: translate(-50%, -50%) rotate(18deg);
-            border-radius: 50%;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background-image: url('5.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
             pointer-events: none;
-            /* 抽象化中心图形：半透明弧段 + 轻微径向过渡 */
-            background:
-                    conic-gradient(from 35deg,
-                    rgba(255,255,255,0.14) 0 55deg,
-                    transparent 55deg 120deg,
-                    rgba(0,0,0,0.14) 120deg 185deg,
-                    transparent 185deg 250deg,
-                    rgba(255,255,255,0.14) 250deg 305deg,
-                    transparent 305deg 360deg
-                    ),
-                    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.08), rgba(0,0,0,0.10) 60%, rgba(0,0,0,0) 78%);
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12), 0 1px 6px rgba(0,0,0,0.22);
-            z-index: 1; /* 标签数字在 ::after 更上层 */
+        }
+        .box-3d .face.right::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background-image: url('6.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            pointer-events: none;
+            top: auto;
         }
 
         .logo { font-size: 22px; font-weight: bold; text-align: center; letter-spacing: 1px; }
@@ -402,12 +422,7 @@
                 <button id="btnFront" type="button" class="btn" aria-label="回到正面">回到正面</button>
             </div>
         </div>
-        <div class="copy-panel" aria-label="可复制文字板式">
-            <div class="copy-title">可复制的文字排版（与4号面一致）</div>
-            <div class="copy-text">
-                <div class="line line1">Balance. Simplicity. Mindfulness.</div>
-            </div>
-        </div>
+        
     </div>
 </div>
 
@@ -418,6 +433,8 @@
         let dragging = false;
         let startX = 0, startY = 0;
         let rotX = -15, rotY = -25;
+        let autoTourCancelled = false; // 用户交互后取消自动旋转
+        const cancelAutoTour = () => { autoTourCancelled = true; };
 
         const apply = () => {
             cube.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
@@ -438,6 +455,7 @@
             cube.addEventListener('pointerdown', (e) => {
                 if (e.cancelable) e.preventDefault();
                 dragging = true;
+                cancelAutoTour();
                 startX = e.clientX;
                 startY = e.clientY;
                 try { cube.setPointerCapture(e.pointerId); } catch (_) {}
@@ -458,6 +476,7 @@
             // 回退：鼠标 + 触摸
             cube.addEventListener('mousedown', (e) => {
                 dragging = true;
+                cancelAutoTour();
                 startX = e.clientX;
                 startY = e.clientY;
             });
@@ -467,6 +486,7 @@
             cube.addEventListener('touchstart', (e) => {
                 if (e.cancelable) e.preventDefault();
                 dragging = true;
+                cancelAutoTour();
                 startX = e.touches[0].clientX;
                 startY = e.touches[0].clientY;
             }, { passive: false });
@@ -489,7 +509,49 @@
             });
         }
 
+        // 自动旋转导览：展示六个面（正、右、背、左、上、下）
+        const easeInOut = (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        const animateTo = (targetX, targetY, duration = 900) => new Promise((resolve) => {
+            const startX0 = rotX, startY0 = rotY;
+            const startTime = performance.now();
+            const step = (now) => {
+                if (autoTourCancelled) { resolve(); return; }
+                const progress = Math.min(1, (now - startTime) / duration);
+                const k = easeInOut(progress);
+                rotX = startX0 + (targetX - startX0) * k;
+                rotY = startY0 + (targetY - startY0) * k;
+                apply();
+                if (progress < 1) requestAnimationFrame(step); else resolve();
+            };
+            requestAnimationFrame(step);
+        });
+        const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+        const runAutoTour = async () => {
+            await sleep(400);
+            const steps = [
+                { x: -10, y:   0 },  // 正面
+                { x: -10, y:  90 },  // 右侧
+                { x: -10, y: 180 },  // 背面
+                { x: -10, y: 270 },  // 左侧
+                { x: -90, y:   0 },  // 顶部
+                { x:  90, y:   0 },  // 底部
+            ];
+            for (const s of steps) {
+                if (autoTourCancelled) break;
+                await animateTo(s.x, s.y, 900);
+                if (autoTourCancelled) break;
+                await sleep(600);
+            }
+        };
+
+        // 任意交互都终止自动导览
+        ['mousedown','touchstart','pointerdown','wheel','keydown'].forEach((ev) => {
+            window.addEventListener(ev, cancelAutoTour, { passive: true });
+        });
+
         apply();
+        runAutoTour();
     });
 </script>
 </body>
