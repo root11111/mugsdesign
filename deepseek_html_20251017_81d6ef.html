@@ -130,9 +130,10 @@
             position: relative;
             transform-style: preserve-3d;
             transform: rotateX(-15deg) rotateY(-25deg);
-            transition: transform 0.2s ease-out;
+            transition: none; /* 移除过渡，让拖拽更流畅 */
             cursor: grab;
             touch-action: none; /* 防止触摸滚动/双指缩放干扰拖拽 */
+            will-change: transform; /* 启用硬件加速 */
         }
 
         .box-3d:active { cursor: grabbing; }
@@ -160,7 +161,7 @@
         .top   { transform: rotateX(90deg) translateZ(120px); }
         .bottom{ transform: rotateX(-90deg) translateZ(120px); }
 
-        /* 设计应用：1面左侧黑色+杯子图，右侧磨砂 */
+        /* 新的2面（原front面）：左侧黑色+杯子图，右侧磨砂 */
         .front { 
             background: linear-gradient(to right, #000000 0 50%, #f5f5f5 50% 100%); 
             background-position: center; 
@@ -218,8 +219,9 @@
         }
         /* 只显示杯子的一半：back 显示左半 */
         .back::before  { clip-path: inset(0 50% 0 0); }
+        /* 新的1面（原right面）：上下两张图片 */
         .right {
-            background-color: #f5f5f5; /* 3面磨砂背景色 */
+            background-color: #f5f5f5; /* 1面磨砂背景色 */
             background-image: none; /* 使用伪元素分上下两半 */
             background-size: auto;
             background-position: center;
@@ -535,16 +537,15 @@
         <div class="box-preview">
             <div class="scene">
                 <div class="box-3d" aria-label="可拖拽旋转的马克杯3D盒">
-                    <div class="face front" data-text="Balance. Simplicity. Mindfulness."><span class="face-number">1</span></div>
-                    <div class="face back" data-text="Live Your Truth"><span class="face-number">2</span></div>
-                    <div class="face right" data-text="CLAY & SPIRIT"><span class="face-number">3</span></div>
+                    <div class="face front" data-text="Balance. Simplicity. Mindfulness."><span class="face-number">2</span></div>
+                    <div class="face back" data-text="Live Your Truth"><span class="face-number">3</span></div>
+                    <div class="face right" data-text="CLAY & SPIRIT"><span class="face-number">1</span></div>
                     <div class="face left" data-text="CLAY & SPIRIT"><span class="face-number">4</span></div>
                     <div class="face top" data-text="Pause and Breathe"><span class="face-number">5</span></div>
                     <div class="face bottom" data-text="Stillness is Strength"><span class="face-number">6</span></div>
                 </div>
             </div>
             <div class="controls">
-                <button id="btnFront" type="button" class="btn" aria-label="回到正面">回到正面</button>
             </div>
         </div>
         
@@ -568,31 +569,62 @@
         let startX = 0, startY = 0;
         let rotX = -15, rotY = -25;
         let autoTourCancelled = false; // 用户交互后取消自动旋转
-        const cancelAutoTour = () => { autoTourCancelled = true; };
+        let autoTourActive = false; // 自动导览是否正在进行
+        let userInteracted = false; // 用户是否已经交互过
+        const cancelAutoTour = () => { 
+            autoTourCancelled = true; 
+            userInteracted = true;
+        };
 
+        let lastFrameTime = 0;
+        const targetFPS = 60;
+        const frameInterval = 1000 / targetFPS;
+        
         const apply = () => {
-            cube.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            const now = performance.now();
+            if (now - lastFrameTime >= frameInterval) {
+                cube.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+                lastFrameTime = now;
+            }
         };
 
         const onMoveDelta = (clientX, clientY) => {
             if (!dragging) return;
             const dx = clientX - startX;
             const dy = clientY - startY;
-            // 只有移动距离超过阈值才开始拖拽
-            if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
-                rotY += dx * 0.3;
-                rotX -= dy * 0.3;
-                startX = clientX;
-                startY = clientY;
-                apply();
+            // 增加敏感度，让滑动更流畅
+            rotY += dx * 0.5;
+            rotX -= dy * 0.5;
+            startX = clientX;
+            startY = clientY;
+            apply();
+            // 用户拖拽时标记为已交互
+            userInteracted = true;
+        };
+        
+        // 安全重置拖拽状态
+        const resetDragging = () => {
+            dragging = false;
+            // 如果用户没有交互过，延迟后重新开始自动导览
+            if (!userInteracted && !autoTourActive) {
+                setTimeout(() => {
+                    if (!userInteracted && !autoTourActive) {
+                        runAutoTour();
+                    }
+                }, 3000); // 3秒后重新开始
             }
         };
+        
+        // 添加全局事件监听器作为备用重置机制
+        document.addEventListener('mouseup', resetDragging);
+        document.addEventListener('touchend', resetDragging);
+        document.addEventListener('pointerup', resetDragging);
 
         if ('PointerEvent' in window) {
             cube.addEventListener('pointerdown', (e) => {
                 if (e.cancelable) e.preventDefault();
                 dragging = true;
-                cancelAutoTour();
+                // 不立即取消自动导览，让用户可以干涉
                 startX = e.clientX;
                 startY = e.clientY;
                 try { cube.setPointerCapture(e.pointerId); } catch (_) {}
@@ -612,46 +644,74 @@
         } else {
             // 回退：鼠标 + 触摸
             cube.addEventListener('mousedown', (e) => {
+                e.preventDefault();
                 dragging = true;
-                cancelAutoTour();
+                // 不立即取消自动导览，让用户可以干涉
                 startX = e.clientX;
                 startY = e.clientY;
             });
-            window.addEventListener('mousemove', (e) => onMoveDelta(e.clientX, e.clientY));
-            window.addEventListener('mouseup', () => { dragging = false; });
+            
+            cube.addEventListener('mousemove', (e) => {
+                if (dragging) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onMoveDelta(e.clientX, e.clientY);
+                }
+            });
+            
+            cube.addEventListener('mouseup', (e) => {
+                e.preventDefault();
+                dragging = false;
+            });
+            
+            cube.addEventListener('mouseleave', (e) => {
+                dragging = false;
+            });
 
             cube.addEventListener('touchstart', (e) => {
                 if (e.cancelable) e.preventDefault();
                 dragging = true;
-                cancelAutoTour();
+                // 不立即取消自动导览，让用户可以干涉
                 startX = e.touches[0].clientX;
                 startY = e.touches[0].clientY;
             }, { passive: false });
-            window.addEventListener('touchmove', (e) => {
-                // 防止页面滚动影响拖拽
-                if (e.cancelable) e.preventDefault();
-                onMoveDelta(e.touches[0].clientX, e.touches[0].clientY);
+            
+            cube.addEventListener('touchmove', (e) => {
+                if (dragging) {
+                    if (e.cancelable) e.preventDefault();
+                    e.stopPropagation();
+                    onMoveDelta(e.touches[0].clientX, e.touches[0].clientY);
+                }
             }, { passive: false });
-            window.addEventListener('touchend', () => { dragging = false; });
-            window.addEventListener('mouseleave', () => { dragging = false; });
-        }
-
-        // 回到正面按钮
-        const btnFront = document.getElementById('btnFront');
-        if (btnFront) {
-            btnFront.addEventListener('click', () => {
-                rotX = -10; // 轻微俯视角度，视觉更自然
-                rotY = 0;   // 正对正面
-                apply();
+            
+            cube.addEventListener('touchend', (e) => {
+                if (e.cancelable) e.preventDefault();
+                dragging = false;
             });
         }
+
 
         // 自动旋转导览：展示六个面（正、右、背、左、上、下）
         const easeInOut = (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
         const animateTo = (targetX, targetY, duration = 900) => new Promise((resolve) => {
             const startX0 = rotX, startY0 = rotY;
             const startTime = performance.now();
+            let paused = false;
+            
             const step = (now) => {
+                // 如果用户正在拖拽，暂停动画并等待
+                if (dragging) {
+                    paused = true;
+                    requestAnimationFrame(step);
+                    return;
+                }
+                
+                // 如果之前被暂停了，重新开始计时
+                if (paused) {
+                    paused = false;
+                    startTime = performance.now();
+                }
+                
                 if (autoTourCancelled) { resolve(); return; }
                 const progress = Math.min(1, (now - startTime) / duration);
                 const k = easeInOut(progress);
@@ -665,32 +725,49 @@
         const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
         const runAutoTour = async () => {
-            await sleep(400);
+            autoTourActive = true;
             const steps = [
-                { x: -10, y:   0 },  // 正面
-                { x: -10, y:  90 },  // 右侧
-                { x: -10, y: 180 },  // 背面
-                { x: -10, y: 270 },  // 左侧
-                { x: -90, y:   0 },  // 顶部
-                { x:  90, y:   0 },  // 底部
+                { x: -10, y:  90 },  // 1面（right面）
+                { x: -10, y:   0 },  // 2面（front面）
+                { x: -10, y: 180 },  // 3面（back面）
+                { x: -10, y: 270 },  // 4面（left面）
+                { x: -90, y:   0 },  // 5面（top面）
+                { x:  90, y:   0 },  // 6面（bottom面）
             ];
-            for (const s of steps) {
-                if (autoTourCancelled) break;
-                await animateTo(s.x, s.y, 900);
-                if (autoTourCancelled) break;
-                await sleep(600);
-            }
-            // 导览结束后重置状态，确保拖拽正常
-            autoTourCancelled = false;
+            
+            let currentStep = 0;
+            
+            const nextStep = async () => {
+                if (userInteracted) {
+                    autoTourActive = false;
+                    return;
+                }
+                
+                const step = steps[currentStep];
+                await animateTo(step.x, step.y, 900);
+                
+                if (!userInteracted) {
+                    await sleep(600);
+                    currentStep = (currentStep + 1) % steps.length;
+                    setTimeout(nextStep, 0);
+                } else {
+                    autoTourActive = false;
+                }
+            };
+            
+            await nextStep();
         };
 
-        // 任意交互都终止自动导览
-        ['mousedown','touchstart','pointerdown','wheel','keydown'].forEach((ev) => {
-            window.addEventListener(ev, cancelAutoTour, { passive: true });
-        });
+        
 
         apply();
-        runAutoTour();
+        
+        // 延迟启动自动导览，确保页面完全加载
+        setTimeout(() => {
+            if (!autoTourCancelled) {
+                runAutoTour();
+            }
+        }, 1000);
         
         // 点击面显示文字功能
         const faces = document.querySelectorAll('.face');
