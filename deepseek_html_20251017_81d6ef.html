@@ -472,6 +472,49 @@
         }
 
         footer { display: none; }
+        
+        /* 可复制文字显示区域样式 */
+        .copy-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #000000;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1000;
+            min-width: 200px;
+        }
+        .copy-content h3 {
+            color: #f5f5f5;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .copy-text {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            user-select: text;
+        }
+        .copy-display .btn {
+            width: 100%;
+            background: #3498db;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-display .btn:hover {
+            background: #2980b9;
+        }
 
         @media (max-width: 768px) {
             .scene { width: 300px; height: 300px; perspective: 800px; }
@@ -492,16 +535,25 @@
         <div class="box-preview">
             <div class="scene">
                 <div class="box-3d" aria-label="可拖拽旋转的马克杯3D盒">
-                    <div class="face front"><span class="face-number">1</span></div>
-                    <div class="face back"></div>
-                    <div class="face right"><span class="face-number">3</span></div>
-                    <div class="face left"><span class="face-number">4</span></div>
-                    <div class="face top"></div>
-                    <div class="face bottom"></div>
+                    <div class="face front" data-text="Balance. Simplicity. Mindfulness."><span class="face-number">1</span></div>
+                    <div class="face back" data-text="Live Your Truth"><span class="face-number">2</span></div>
+                    <div class="face right" data-text="CLAY & SPIRIT"><span class="face-number">3</span></div>
+                    <div class="face left" data-text="CLAY & SPIRIT"><span class="face-number">4</span></div>
+                    <div class="face top" data-text="Pause and Breathe"><span class="face-number">5</span></div>
+                    <div class="face bottom" data-text="Stillness is Strength"><span class="face-number">6</span></div>
                 </div>
             </div>
             <div class="controls">
                 <button id="btnFront" type="button" class="btn" aria-label="回到正面">回到正面</button>
+            </div>
+        </div>
+        
+        <!-- 可复制文字显示区域 -->
+        <div class="copy-display" id="copyDisplay" style="display: none;">
+            <div class="copy-content">
+                <h3>点击面的文字内容：</h3>
+                <div class="copy-text" id="copyText"></div>
+                <button id="copyBtn" class="btn">复制文字</button>
             </div>
         </div>
         
@@ -526,11 +578,14 @@
             if (!dragging) return;
             const dx = clientX - startX;
             const dy = clientY - startY;
-            rotY += dx * 0.3;
-            rotX -= dy * 0.3;
-            startX = clientX;
-            startY = clientY;
-            apply();
+            // 只有移动距离超过阈值才开始拖拽
+            if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+                rotY += dx * 0.3;
+                rotX -= dy * 0.3;
+                startX = clientX;
+                startY = clientY;
+                apply();
+            }
         };
 
         if ('PointerEvent' in window) {
@@ -625,6 +680,8 @@
                 if (autoTourCancelled) break;
                 await sleep(600);
             }
+            // 导览结束后重置状态，确保拖拽正常
+            autoTourCancelled = false;
         };
 
         // 任意交互都终止自动导览
@@ -634,6 +691,71 @@
 
         apply();
         runAutoTour();
+        
+        // 点击面显示文字功能
+        const faces = document.querySelectorAll('.face');
+        const copyDisplay = document.getElementById('copyDisplay');
+        const copyText = document.getElementById('copyText');
+        const copyBtn = document.getElementById('copyBtn');
+        
+        // 添加双击事件来显示文字
+        faces.forEach(face => {
+            face.addEventListener('dblclick', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                const text = face.getAttribute('data-text');
+                if (text) {
+                    copyText.textContent = text;
+                    copyDisplay.style.display = 'block';
+                }
+            });
+        });
+        
+        // 添加键盘快捷键显示文字
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '1' && e.key <= '6') {
+                const faceIndex = parseInt(e.key) - 1;
+                const face = faces[faceIndex];
+                if (face) {
+                    const text = face.getAttribute('data-text');
+                    if (text) {
+                        copyText.textContent = text;
+                        copyDisplay.style.display = 'block';
+                    }
+                }
+            }
+        });
+        
+        // 复制文字功能
+        copyBtn.addEventListener('click', () => {
+            const text = copyText.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                copyBtn.textContent = '已复制！';
+                setTimeout(() => {
+                    copyBtn.textContent = '复制文字';
+                }, 2000);
+            }).catch(() => {
+                // 回退方案
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                copyBtn.textContent = '已复制！';
+                setTimeout(() => {
+                    copyBtn.textContent = '复制文字';
+                }, 2000);
+            });
+        });
+        
+        
+        // 点击其他地方隐藏复制区域
+        document.addEventListener('click', (e) => {
+            if (!copyDisplay.contains(e.target) && !e.target.closest('.face')) {
+                copyDisplay.style.display = 'none';
+            }
+        });
     });
 </script>
 </body>
