@@ -360,9 +360,41 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-        .bottom::before{
-            content: none;
-            background: none;
+        /* 4面产品信息样式 */
+        .product-info {
+            position: absolute;
+            top: 75%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .product-title {
+            color: #ffffff;
+            font-size: 7px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .product-specs {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .spec-item {
+            color: #f0f0f0;
+            font-size: 5px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            letter-spacing: 0.2px;
+            line-height: 1.2;
         }
 
         /* 覆盖数字标签：让 3 号面上下各 50% 图片生效 */
@@ -540,7 +572,17 @@
                     <div class="face front" data-text="Balance. Simplicity. Mindfulness."><span class="face-number">2</span></div>
                     <div class="face back" data-text="Live Your Truth"><span class="face-number">3</span></div>
                     <div class="face right" data-text="CLAY & SPIRIT"><span class="face-number">1</span></div>
-                    <div class="face left" data-text="CLAY & SPIRIT"><span class="face-number">4</span></div>
+                    <div class="face left" data-text="CLAY & SPIRIT">
+                        <span class="face-number">4</span>
+                        <div class="product-info">
+                            <div class="product-title">Ceramic Mug</div>
+                            <div class="product-specs">
+                                <div class="spec-item">Ceramic</div>
+                                <div class="spec-item">13 oz Capacity</div>
+                                <div class="spec-item">Made in China</div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="face top" data-text="Pause and Breathe"><span class="face-number">5</span></div>
                     <div class="face bottom" data-text="Stillness is Strength"><span class="face-number">6</span></div>
                 </div>
