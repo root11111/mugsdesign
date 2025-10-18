@@ -360,6 +360,22 @@
             background-position: center;
             background-repeat: no-repeat;
         }
+        /* 4面品牌标题样式 */
+        .brand-title {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
         /* 4面产品信息样式 */
         .product-info {
             position: absolute;
@@ -390,7 +406,7 @@
         
         .spec-item {
             color: #f0f0f0;
-            font-size: 5px;
+            font-size: 6px;
             font-weight: 500;
             text-shadow: 0 1px 2px rgba(0,0,0,0.8);
             letter-spacing: 0.2px;
@@ -574,6 +590,7 @@
                     <div class="face right" data-text="CLAY & SPIRIT"><span class="face-number">1</span></div>
                     <div class="face left" data-text="CLAY & SPIRIT">
                         <span class="face-number">4</span>
+                        <div class="brand-title">CLAY & SPIRIT</div>
                         <div class="product-info">
                             <div class="product-title">Ceramic Mug</div>
                             <div class="product-specs">
